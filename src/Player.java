@@ -5,6 +5,7 @@ public class Player {
     private int points;
     private String name;
 
+
     public Player(String name)
     {
         this.name = name;
@@ -41,9 +42,9 @@ public class Player {
     {
         points += addPoints;
     }
-    public void setHand(ArrayList<Card> hand)
+    public void addCard(Card card)
     {
-        this.hand = hand;
+        this.hand.add(card);
     }
     public ArrayList<Card> getHand()
     {
