@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 public class Game {
     private final int[] values = {1,2,3,4,5,6};
@@ -6,9 +7,12 @@ public class Game {
     private final int NUM_PLAYERS = 4;
     private final int CARDS_PER_HAND = 5;
     private static int numHands = 0;
-    private static String dealer;
+    private static Player dealer;
     private static Player[] players = Player[4];
     private Deck cardDeck;
+    private Card topCard;
+    Scanner input = new Scanner(System.in);
+    private ArrayList<Card> pot;
 
     public static void main(String[] args)
     {
@@ -59,8 +63,8 @@ public class Game {
     // Constructor that makes a dice game object
     public Game()
     {
-        Scanner input = new Scanner(System.in);
-        Deck cardDeck = new Deck(ranks, suits, values);
+        pot = new ArrayList<Card>();
+        cardDeck = new Deck(ranks, suits, values);
         for (int i = 0; i < NUM_PLAYERS; i++)
         {
             System.out.println("Player " + i+1 + ": What is your name?");
@@ -77,8 +81,27 @@ public class Game {
         while(players[0].getPoints() < 10 && players[1].getPoints() < 10)
         {
             numHands++;
+
+            //makes dealer
             this.makeDealer();
+
+            //deals each player their hand
             this.dealHands();
+
+            //reveals top card
+            topCard = cardDeck.deal();
+            System.out.println(topCard);
+
+            //take top card
+            this.setTopCardCard();
+
+            //Add turn
+            this.turn();
+            System.out.println(pot);
+
+            //determine winner and add points
+            this.findWinner();
+
 
 
 
@@ -89,7 +112,7 @@ public class Game {
     {
         for (int i = 0; i < NUM_PLAYERS; i++)
         {
-            for (int j; j < CARDS_PER_HAND; j++)
+            for (int j = 0; j < CARDS_PER_HAND; j++)
                 players[i].addCard(cardDeck.deal());
         }
     }
@@ -98,24 +121,60 @@ public class Game {
     {
         if(numHands % 4 == 0)
         {
-            dealer = players[0].getName();
+            dealer = players[0];
         }
-        else if(numHands % 3 == 0)
+        else if(numHands % 4 == 1)
         {
-            dealer = players[2].getName();
+            dealer = players[2];
         }
-        else if (numHands % 2 == 0)
+        else if (numHands % 4 == 2)
         {
-            dealer = players[1].getName();
+            dealer = players[1];
         }
         else
         {
-            dealer = players[3].getName();
+            dealer = players[3];
         }
     }
-
-    public void setPlayerNames()
+    public void findWinner()
     {
 
+
+    }
+    public void turn()
+    {
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            System.out.println(players[i].getHand());
+            System.out.println("Please give the index of the Card you want to Play 0 - 4")
+            int index = input.nextInt();
+            input.nextLine();
+            pot.add(players[i].getHand().remove(index));
+        }
+    }
+    public void
+    public void setTopCardCard()
+    {
+        System.out.println("Dealer, would you like to pick up the top card? \n"  +
+                "Type 'y' for Yes and 'n' for No");
+        String answer = input.nextLine();
+
+        if(answer.equals("y"))
+        {
+            System.out.println(dealer.getHand());
+            System.out.print("Please give the index of the card you would like to remove");
+            int index = input.nextInt();
+            input.nextLine();
+            dealer.getHand().remove(index);
+            dealer.addCard(topCard);
+        }
+        else if(answer.equals("n"))
+        {
+          return;
+        }
+        else
+        {
+            System.out.println("Please Give a Valid Answer");
+            this.setTopCardCard();
+        }
     }
 }

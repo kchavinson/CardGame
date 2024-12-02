@@ -4,6 +4,7 @@ public class Player {
     private ArrayList<Card> hand;
     private int points;
     private String name;
+    private Card lastPlayed;
 
 
     public Player(String name)
@@ -49,5 +50,13 @@ public class Player {
     public ArrayList<Card> getHand()
     {
         return this.hand;
+    }
+    public Card getLastPlayed()
+    {
+        return this.lastPlayed;
+    }
+    public void setLastPlayed(Card card)
+    {
+        this.lastPlayed = card;
     }
 }
