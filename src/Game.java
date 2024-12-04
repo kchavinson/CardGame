@@ -16,6 +16,8 @@ public class Game {
     private Player winnerOfTrick;
     private int winningValue;
     private Card winningCard;
+    private String trump;
+    private int trumpValue;
 
     public static void main(String[] args)
     {
@@ -58,7 +60,7 @@ public class Game {
                 "Defenders Win:\n" +
                 "3+ tricks: 2 points.\n" +
                 "Winning the Game\n" +
-                "The first team to reach 10 points wins.! " + "\n");
+                "The first team to reach 10 points wins! " + "\n");
     }
 
     // Constructor that makes a dice game object
@@ -80,8 +82,8 @@ public class Game {
     // Holds the game
     public void play()
     {
-        while((players[0].getPoints() + players[2].getPoints() <= 10 ||
-                players[1].getPoints() + players[3].getPoints() <= 10)) {
+        while((players[0].getPoints() + players[2].getPoints() <= 2 ||
+                players[1].getPoints() + players[3].getPoints() <= 2)) {
             numHands++;
 
             //makes dealer
@@ -99,13 +101,28 @@ public class Game {
             //take top card
             this.setTopCardCard();
 
-            //Run turns
-            this.turn(0);
+            //prints trump suit
+            System.out.println(trump + " is now the Trump Suit");
 
-            //shows winner of trick and point count
-            System.out.println(winnerOfTrick.getName() + "has won this trick with a " + winningCard);
-            winnerOfTrick.addPoints(1);
-            System.out.println(winnerOfTrick);
+            //Run turns
+            for (int i = 0; i < CARDS_PER_HAND; i++)
+            {
+                this.turn(0);
+
+                //shows winner of trick and point count
+                System.out.println(winnerOfTrick.getName() + " has won this trick with a " + winningCard);
+                winnerOfTrick.addPoints(1);
+                System.out.println(winnerOfTrick.getName() + " now has " + winnerOfTrick.getPoints() + " points!");
+
+                //resets the values of winning cards
+                winnerOfTrick = null;
+                winningCard = null;
+                winningValue = 0;
+                while(!pot.isEmpty())
+                {
+                    pot.remove(0);
+                }
+            }
 
         }
     }
@@ -120,15 +137,15 @@ public class Game {
 
     public void makeDealer()
     {
-        if(numHands % 4 == 0)
+        if(numHands % 4 == 1)
         {
             dealer = players[0];
         }
-        else if(numHands % 4 == 1)
+        else if(numHands % 4 == 2)
         {
             dealer = players[2];
         }
-        else if (numHands % 4 == 2)
+        else if (numHands % 4 == 3)
         {
             dealer = players[1];
         }
@@ -139,19 +156,29 @@ public class Game {
     }
     public void findWinner(int i, int index, Card card)
     {
-        if (pot.size() == 1 || players[i].getHand().get(index).getValue() >= winningValue)
+        if (card.getSuit().equals(trump))
         {
-            winnerOfTrick = players[i];
-            winningValue = players[i].getHand().get(index).getValue();
-            winningCard = card;
+            trumpValue = card.getValue() * 10;
         }
-
+        if (pot.size() == 1 || players[i].getHand().get(index).getValue() > winningValue || trumpValue > winningValue)
+        {
+            if (trumpValue > winningValue)
+            {
+                winningValue = trumpValue;
+            }
+            else
+            {
+                winningValue = players[i].getHand().get(index).getValue();
+            }
+            winnerOfTrick = players[i];
+            winningCard = card;
+            trumpValue = 0;
+        }
     }
     public void turn(int i)
     {
-
         while (i < NUM_PLAYERS) {
-            System.out.println("Players Hand: " + players[i].getHand());
+            System.out.println(players[i].getName() + "'s Hand: " + players[i].getHand());
             System.out.println("Please give the index of the Card you want to Play 0 - "
                     + (players[i].getHand().size() - 1));
             int index = input.nextInt();
@@ -159,9 +186,9 @@ public class Game {
 
             if (this.isValidPlay(index, i))
             {
-                Card card = players[i].getHand().remove(index);
-                pot.add(card);
-                this.findWinner(i, index, card);
+                pot.add(players[i].getHand().get(index));
+                this.findWinner(i, index, players[i].getHand().get(index));
+                players[i].getHand().remove(index);
             }
             else
             {
@@ -185,28 +212,60 @@ public class Game {
         return true;
     }
     //checks to see if the user turn request is valid
+    public boolean isValidIndex(int index, int i)
+    {
+        return players[i].getHand().size() > index && index >= 0;
+    }
     public boolean isValidPlay(int index, int i)
     {
-        return pot.isEmpty() || players[i].getHand().get(index).getSuit().equals(pot.get(0).getSuit()) || hasNoSuit(i);
+        return (pot.isEmpty() || players[i].getHand().get(index).getSuit().equals(pot.get(0).getSuit())
+                || hasNoSuit(i)) && isValidIndex(index, i);
     }
+    public boolean isValidTrump()
+    {
+        for (String suit: suits)
+        {
+            if(suit.equals(trump))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setTopCardCard()
     {
-        System.out.println(dealer.getHand());
+        System.out.println(dealer.getName() + "'s Hand: " + dealer.getHand());
         System.out.println("Dealer, would you like to pick up the top card? \n"  +
                 "Type 'y' for Yes and 'n' for No");
         String answer = input.nextLine();
-
         if(answer.equals("y"))
         {
             System.out.println("Please give the index of the card you would like to remove: ");
             int index = input.nextInt();
-            input.nextLine();
-            dealer.getHand().remove(index);
-            dealer.addCard(topCard);
+
+            if (isValidIndex(index,numHands % 4))
+            {
+                input.nextLine();
+                dealer.getHand().remove(index);
+                dealer.addCard(topCard);
+                trump = topCard.getSuit();
+            }
+            else
+            {
+                System.out.println("Invalid Index Please try again");
+                this.setTopCardCard();
+            }
         }
         else if(answer.equals("n"))
         {
-          return;
+            System.out.println("What Suit would you like to be Trump instead");
+            trump = input.nextLine();
+            if(!isValidTrump())
+            {
+                System.out.println("Invalid Trump Please try again");
+                this.setTopCardCard();
+            }
         }
         else
         {

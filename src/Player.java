@@ -59,9 +59,4 @@ public class Player {
     {
         this.lastPlayed = card;
     }
-    public String toString()
-    {
-        return this.name + " has won and now has " + this.points + " points!";
-    }
-
 }
