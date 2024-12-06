@@ -5,6 +5,7 @@ public class Deck {
     ArrayList<Card> deck = new ArrayList<Card>();
     private static int cardsLeft;
 
+    //constructor to create new card deck
     public Deck(String[] ranks, String[] suits, int[] values)
     {
         for (int i = 0; i < ranks.length; i++)
@@ -15,12 +16,15 @@ public class Deck {
         }
         cardsLeft = this.deck.size();
     }
+    //checks if deck is empty
     public boolean isEmpty()
     {
         return (cardsLeft == 0);
     }
+    //deals cards out
     public Card deal()
     {
+        //if cards are left, subtract 1 from cardsleft and get that from the array list
         if (cardsLeft == 0)
         {
             return null;
@@ -28,6 +32,7 @@ public class Deck {
         cardsLeft--;
         return this.deck.get(cardsLeft);
     }
+    //shuffles card deck
     public void shuffle()
     {
         int randomIndex;

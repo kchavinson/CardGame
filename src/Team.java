@@ -16,10 +16,14 @@ public class Team {
         team2[0] = players[1];
         team2[1] = players[3];
     }
+
+    //getter for team1
     public Player[] getTeam1()
     {
         return this.team1;
     }
+
+    //getter for team2
     public Player[] getTeam2()
     {
         return this.team2;
@@ -31,31 +35,31 @@ public class Team {
         return team1Points;
     }
 
-    // Setter for team1Points
+    //Setter for team1Points
     public static void setTeam1Points(int points)
     {
         team1Points = points;
     }
 
-    // Getter for team2Points
+    //Getter for team2Points
     public static int getTeam2Points()
     {
         return team2Points;
     }
 
-    // Setter for team2Points
+    //Setter for team2Points
     public static void setTeam2Points(int points)
     {
         team2Points = points;
     }
 
-    // Method to add points to team1
+    //Method to add points to team1
     public static void addPointsToTeam1(int points)
     {
         team1Points += points;
     }
 
-    // Method to add points to team2
+    //Method to add points to team2
     public static void addPointsToTeam2(int points)
     {
         team2Points += points;
